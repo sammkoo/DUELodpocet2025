@@ -1,0 +1,93 @@
+<!doctype html>
+<html lang="sk">
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>duel – odpočet</title>
+<style>
+  @font-face {
+    font-family: 'Eurostile';
+    src: url('Eurostile.woff2') format('woff2');
+    font-weight: normal;
+    font-style: normal;
+    font-display: swap;
+  }
+  :root{
+    --accent:#3ec6ff;
+    --bg:rgba(0,25,51,0.6);
+    --text:#ffffff;
+  }
+  *{box-sizing:border-box}
+  html,body{margin:0;padding:0;background:transparent}
+  .wrap{
+    display:inline-flex; align-items:center; gap:.5rem;
+    padding:.7rem 1rem; border-radius:14px;
+    background:var(--bg); color:var(--text);
+    font-family:'Eurostile', Arial, sans-serif;
+    text-shadow:0 2px 6px rgba(0,0,0,.4);
+  }
+  .title{font-weight:700; font-size:1rem; line-height:1.1; text-transform:uppercase; opacity:.95; color:#ffeb3b}
+  .count{display:flex; align-items:stretch; gap:.35rem; font-variant-numeric:tabular-nums;}
+  .box{min-width:3ch; text-align:center; background:rgba(0,25,51,0.3); border:1px solid var(--accent); border-radius:10px; padding:.35rem .45rem;}
+  .num{display:block; font-size:1.2rem; font-weight:800; line-height:1}
+  .lbl{display:block; font-size:.65rem; opacity:.9; margin-top:.15rem; text-transform:uppercase; letter-spacing:.04em}
+  .live{display:none; align-items:center; gap:.5rem; font-weight:800; text-transform:uppercase;}
+  .dot{width:.6rem; height:.6rem; border-radius:50%; background:var(--accent); box-shadow:0 0 12px var(--accent)}
+  .when{font-size:.85rem; opacity:.9}
+</style>
+
+<div class="wrap">
+  <div class="title" id="title">Štart sezóny za</div>
+  <div class="count" id="count">
+    <div class="box"><span class="num" id="d">–</span><span class="lbl">dni</span></div>
+    <div class="box"><span class="num" id="h">–</span><span class="lbl">hod</span></div>
+    <div class="box"><span class="num" id="m">–</span><span class="lbl">min</span></div>
+    <div class="box"><span class="num" id="s">–</span><span class="lbl">sek</span></div>
+  </div>
+  <div class="live" id="live">
+    <span class="dot"></span>
+    <span id="live-text">štartujeme dnes</span>
+    <span class="when" id="when"></span>
+  </div>
+</div>
+
+<script>
+  // pevne nastavený čas premiéry – 1. september 2025, 17:55 CEST (+02:00)
+  const target = new Date("2025-09-01T17:55:00+02:00");
+
+  const dEl = document.getElementById('d');
+  const hEl = document.getElementById('h');
+  const mEl = document.getElementById('m');
+  const sEl = document.getElementById('s');
+  const countWrap = document.getElementById('count');
+  const liveWrap  = document.getElementById('live');
+  const whenEl    = document.getElementById('when');
+
+  function pad(n){ return n.toString().padStart(2,'0'); }
+  function fmtTime(dt){ return `${pad(dt.getHours())}:${pad(dt.getMinutes())}`; }
+  whenEl.textContent = fmtTime(target);
+
+  function tick(){
+    const now = new Date();
+    const diff = target - now;
+
+    if (diff <= 0){
+      countWrap.style.display = 'none';
+      liveWrap.style.display = 'inline-flex';
+      return;
+    }
+    const sec = Math.floor(diff/1000);
+    const d = Math.floor(sec/86400);
+    const h = Math.floor((sec%86400)/3600);
+    const m = Math.floor((sec%3600)/60);
+    const s = sec%60;
+
+    dEl.textContent = d;
+    hEl.textContent = pad(h);
+    mEl.textContent = pad(m);
+    sEl.textContent = pad(s);
+  }
+
+  tick();
+  setInterval(tick, 1000);
+</script>
+</html>
